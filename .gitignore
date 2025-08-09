@@ -1,0 +1,9 @@
+compile_commands.json
+make
+.cache/
+*.png
+main
+
+# Added by cargo
+
+/target
