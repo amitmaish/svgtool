@@ -5,6 +5,7 @@
 
 typedef struct CArgs {
   char *input;
+  char *output;
   double scale;
 } CArgs;
 
