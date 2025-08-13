@@ -17,6 +17,8 @@ pub struct Args {
     output: Option<String>,
     #[arg(short, long, default_value_t = 1.0)]
     scale: f64,
+    #[arg(short, long, default_value_t = 96.0)]
+    dpi: f64,
 }
 
 #[repr(C)]
@@ -24,6 +26,7 @@ pub struct CArgs {
     input: *mut c_char,
     output: *mut c_char,
     scale: f64,
+    dpi: f64,
 }
 
 impl From<Args> for CArgs {
@@ -39,6 +42,7 @@ impl From<Args> for CArgs {
             input: c_string_in.into_raw(),
             output,
             scale: value.scale,
+            dpi: value.dpi,
         }
     }
 }
@@ -63,6 +67,7 @@ impl TryFrom<CArgs> for Args {
             input: String::from(input.to_str()?),
             output,
             scale: value.scale,
+            dpi: value.dpi,
         })
     }
 }
