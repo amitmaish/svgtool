@@ -1,14 +1,19 @@
-libs := cairo
-main: main.c svg_rastor.h
-	gcc --std=c99 -O2 main.c -L./target/release -lsvg_rastor $$(pkg-config --cflags --libs ${libs}) -o main
+libs := cairo librsvg-2.0
+main: main.c svgtool.h
+	gcc --std=c99 -O2 main.c -L./target/release -lsvgtool $$(pkg-config --cflags --libs ${libs}) -o main
 
-svg_rastor.h: $(wildcard src/*)
+svgtool.h: $(wildcard src/*)
 	cargo build --release
-	touch svg_rastor.h
-	cbindgen --crate svg-rastor --output svg_rastor.h --lang c
+	touch svgtool.h
+	cbindgen --crate svgtool --output svgtool.h --lang c
+
+
+.PHONEY: run
+run: main
+	./main $(args)
 
 .PHONEY: clean
 clean:
 	cargo clean
-	rm svg_rastor.h
+	rm svgtool.h
 	rm main
