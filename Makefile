@@ -1,6 +1,6 @@
 libs := cairo librsvg-2.0
-main: main.c svgtool.h
-	gcc --std=c99 -O2 main.c -L./target/release -lsvgtool $$(pkg-config --cflags --libs ${libs}) -o main
+svgtool: main.c svgtool.h
+	gcc --std=c99 -O2 main.c -L./target/release -lsvgtool $$(pkg-config --cflags --libs ${libs}) -o svgtool
 
 svgtool.h: $(wildcard src/*)
 	cargo build --release
@@ -9,11 +9,11 @@ svgtool.h: $(wildcard src/*)
 
 
 .PHONEY: run
-run: main
-	./main $(args)
+run: svgtool
+	./svgtool $(args)
 
 .PHONEY: clean
 clean:
 	cargo clean
 	rm svgtool.h
-	rm main
+	rm svgtool

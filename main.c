@@ -82,7 +82,7 @@ int main() {
     exit(1);
   }
 
-  if (cairo_surface_write_to_png(surface, "hello.png") !=
+  if (cairo_surface_write_to_png(surface, args.output) !=
       CAIRO_STATUS_SUCCESS) {
     g_printerr("could not write output file");
     exit(1);

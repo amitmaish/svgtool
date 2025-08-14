@@ -1,4 +1,7 @@
-use std::ffi::{CString, c_char};
+use std::{
+    ffi::{CString, c_char},
+    path::Path,
+};
 
 use clap::Parser;
 use thiserror::Error;
@@ -15,11 +18,12 @@ pub struct Args {
     input: String,
     #[arg(short, long)]
     output: Option<String>,
-    /// this alters the scale at which your svgs are rastored
+    /// this alters the scale at which your svgs are rastored. this is applied last, after all
+    /// other size parameters
     #[arg(short, long, default_value_t = 1.0)]
     scale: f64,
     /// for svgs with a size in real units, this sets the dpi. this parameter doesn't change the
-    /// aspect ratio, and doesn't affect svgs without physical dimensions
+    /// aspect ratio
     #[arg(short, long, default_value_t = 96.0)]
     dpi: f64,
     /// sets the target width of the final image, overwriting scale and dpi. if set together with
@@ -46,13 +50,19 @@ pub struct CArgs {
 
 impl From<Args> for CArgs {
     fn from(value: Args) -> Self {
-        let c_string_in = CString::new(value.input).unwrap();
-        let c_string_out = value.output.map(|out| CString::new(out).unwrap());
-        let output = if let Some(value) = c_string_out {
-            value.into_raw()
+        let c_string_in = CString::new(value.input.clone()).unwrap();
+        let c_string_out = if let Some(output) = value.output {
+            CString::new(output).unwrap()
         } else {
-            std::ptr::null_mut()
+            let input = Path::new(&value.input);
+            if let Some(Some(name)) = input.file_stem().map(|name| name.to_str()) {
+                CString::new(format!("{name}.png")).unwrap()
+            } else {
+                CString::new("output_not_found.png").unwrap()
+            }
         };
+        let output = c_string_out.into_raw();
+
         Self {
             input: c_string_in.into_raw(),
             output,
